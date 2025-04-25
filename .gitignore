@@ -1,0 +1,19 @@
+# Global node modules (just in case)
+node_modules/
+
+# OS files
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Env files (can also be ignored per sub-project)
+.env
+.env.local
+
+# Docker
+*.log
+docker-compose.override.yml
