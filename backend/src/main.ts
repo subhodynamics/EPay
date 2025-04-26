@@ -4,9 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
-dotenv.config(); // load env variables
-
 async function bootstrap() {
+
+  dotenv.config(); // load env variables
+
   const app = await NestFactory.create(AppModule);
   mongoose.connection.on('connected', () => {
     console.log('MongoDB connection established successfully');

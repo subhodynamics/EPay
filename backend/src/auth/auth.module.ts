@@ -1,19 +1,25 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
+    ConfigModule, // Add this
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.JWT_EXPIRY },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { 
+          expiresIn: configService.get<string>('JWT_EXPIRY') || '1d' 
+        },
+      }),
+      inject: [ConfigService],
     }),
-    UserModule,
   ],
   providers: [JwtStrategy],
-  exports: [PassportModule, JwtModule],
+  exports: [JwtModule, PassportModule], // Export PassportModule too
 })
 export class AuthModule {}

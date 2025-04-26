@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //loads environment variables from .env file
+    ConfigModule.forRoot({isGlobal: true}), //loads environment variables from .env file
     MongooseModule.forRootAsync({ // Asynchronous configuration for MongoDB
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {

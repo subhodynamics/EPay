@@ -30,7 +30,7 @@ export class User {
   @Prop({
     required: true,
     type: String,
-    select: false,
+    select: false, // Do not include password in queries by default
     validate: {
       validator: (value: string) => value.length >= 8,
       message: 'Password must be at least 8 characters long',
