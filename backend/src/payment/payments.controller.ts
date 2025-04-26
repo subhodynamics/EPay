@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CheckPaymentDto } from './dto/check-payment.dto';
+import { CheckPaymentParamDto } from './dto/check-payment-param.dto';
+import { CheckPaymentQueryDto } from './dto/check-payment-query.dto';
 
 @Controller('payments')
 export class PaymentsController {
@@ -11,13 +14,16 @@ export class PaymentsController {
     return this.paymentsService.createPayment(createPaymentDto);
   }
 
-  // @Get('check-payment')
-  // async checkPayment(@Body() createPaymentDto: CreatePaymentDto) {
-  //   return this.paymentsService.checkPayment(createPaymentDto);
-  // }
+  @Get('check-payment/:collect_request_id')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  checkPayment(
+    @Param() params: CheckPaymentParamDto,
+    @Query() query: CheckPaymentQueryDto,
+  ) {
+    const checkPaymentDto = new CheckPaymentDto();
+    checkPaymentDto.collect_request_id = params.collect_request_id; //request is the parameter
+    checkPaymentDto.school_id = query.school_id; // school_id is the query parameter
 
-  // @Get('callback')
-  // async callback(@Body() createPaymentDto: CreatePaymentDto) {
-  //   return this.paymentsService.callback(createPaymentDto);
-  // }
+    return this.paymentsService.checkPayment(checkPaymentDto);
+  }
 }
