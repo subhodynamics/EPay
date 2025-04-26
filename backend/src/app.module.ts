@@ -5,6 +5,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { OrdersModule } from './orders/orders.module';
 import { OrderStatusModule } from './order-status/order-status.module';
 import { WebhookLogsModule } from './webhook-logs/webhook-logs.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { WebhookLogsModule } from './webhook-logs/webhook-logs.module';
     OrdersModule,
     OrderStatusModule,
     WebhookLogsModule,
+    UserModule,
+    AuthModule,
   ],
 })
 export class AppModule { }

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { isEmail } from 'class-validator';
 
 // Define roles as enum for better type safety
 export enum UserRole {
@@ -20,14 +21,20 @@ export class User {
     required: true, 
     type: String, 
     unique: true,
-    match: /^\S+@\S+\.\S+$/ // Basic email validation
+    validator : (value : string) => isEmail(value), // Validate email format
+    message: 'Invalid email format', // Custom error message
+    index: true // Index for faster lookups
   })
   email: string;
 
-  @Prop({ 
-    required: true, 
+  @Prop({
+    required: true,
     type: String,
-    select: false // Prevents password from being returned in queries
+    select: false,
+    validate: {
+      validator: (value: string) => value.length >= 8,
+      message: 'Password must be at least 8 characters long',
+    },
   })
   password: string;
 
@@ -35,7 +42,8 @@ export class User {
     required: true,
     type: String,
     enum: Object.values(UserRole), // Uses enum values
-    default: UserRole.SCHOOL_STAFF 
+    default: UserRole.SCHOOL_STAFF,
+    index: true // Index for faster lookups
   })
   role: UserRole;
 }
