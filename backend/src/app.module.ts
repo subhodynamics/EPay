@@ -3,10 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { OrdersModule } from './orders/orders.module';
-import { OrderStatusModule } from './order-status/order-status.module';
+import { OrderStatusModule } from './order-status/orders-status.module';
 import { WebhookLogsModule } from './webhook-logs/webhook-logs.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { PaymentsModule } from './payment/payments.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AuthModule } from './auth/auth.module';
     WebhookLogsModule,
     UserModule,
     AuthModule,
+    PaymentsModule,
   ],
 })
 export class AppModule { }
