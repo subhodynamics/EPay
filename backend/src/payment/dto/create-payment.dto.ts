@@ -1,4 +1,19 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsObject, ValidateNested, IsOptional, IsNumber } from 'class-validator';
+
+export class StudentIndoDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+}
 
 export class CreatePaymentDto {
   @IsString()
@@ -12,6 +27,14 @@ export class CreatePaymentDto {
   @IsString()
   @IsNotEmpty()
   callback_url: string;
+
+  @IsString()
+  @IsOptional()
+  trustee_id?: string;
+
+  @ValidateNested()
+  @Type(() => StudentIndoDto)
+  student_info: StudentIndoDto;
 
   // This method will generate the JWT signature
   generateSignature(pgKey: string): string {

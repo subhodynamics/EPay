@@ -54,6 +54,9 @@ import { PaymentsModule } from './payment/payments.module';
     UserModule,
     AuthModule,
     PaymentsModule,
+    OrdersModule,
+    OrderStatusModule,
+    WebhookLogsModule,
   ],
 })
 export class AppModule { }

@@ -1,34 +1,38 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type OrderDocument = Order & Document;
-
-// StudentInfo schema (class)
-@Schema()
-export class StudentInfo {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
-  id: string;
-
-  @Prop({ required: true })
-  email: string;
-}
-
-@Schema()
-export class Order {
-  @Prop({ required: true })
+@Schema({ timestamps: true })
+export class Order extends Document {
+  // Remove the @Prop for _id to let MongoDB auto-generate it
+  
+  @Prop({ type: String, required: true })
   school_id: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: false })
   trustee_id: string;
 
-  @Prop({ type: StudentInfo, required: true })
-  student_info: StudentInfo;
+  @Prop({
+    type: {
+      name: { type: String, required: true },
+      id: { type: String, required: true },
+      email: { type: String, required: true },
+    },
+    required: true,
+  })
+  student_info: {
+    name: string;
+    id: string;
+    email: string;
+  };
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: false })
   gateway_name: string;
+  
+  @Prop({ type: String, required: true, index: true })
+  collect_request_id: string; // Store the payment gateway's unique ID
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
+
+// Add index on _id for efficient querying
+// OrderSchema.index({ _id: 1 });
