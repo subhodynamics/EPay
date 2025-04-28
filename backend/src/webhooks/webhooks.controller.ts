@@ -4,16 +4,17 @@ import { OrderStatusService } from '../order-status/orders-status.service';
 import { OrdersService } from '../orders/orders.service';
 import { OrderStatusEnum } from '../order-status/orders-status.enum';
 
+
 @Controller('webhook')
 export class WebhookController {
     constructor(
-        private readonly webhookLogService: WebhookLogService, // logging service
-        private readonly orderStatusService: OrderStatusService, // status updating service -> changes in order status table
-        private readonly ordersService: OrdersService, // order updating service -> changes in order table
-    ) { }
+        private readonly webhookLogService: WebhookLogService,
+        private readonly orderStatusService: OrderStatusService,
+        private readonly ordersService: OrdersService,
+    ) {}
 
     @Post()
-    @HttpCode(HttpStatus.OK) // Return 200 OK to avoid the payment gateway retrying
+    @HttpCode(HttpStatus.OK)
     async handleWebhook(@Body() payload: any) {
         try {
             // Extract data from webhook's payload (nested order_info)
@@ -22,56 +23,84 @@ export class WebhookController {
                 throw new Error('Invalid payload: order_info is missing');
             }
 
-            // extract collect_id and tranactionId from order_id (collect_id/transaction_id -> inside order_info -> order_id)
-            const [ collectId, tranactionId ] = orderInfo.order_id.split('/');
-            if (!collectId || !tranactionId) {
+            // Idempotency check
+            const indempotencyKey = `${orderInfo.order_id}`;
+            const existingLog = await this.webhookLogService.findByIndempotencyKey(indempotencyKey);
+            if (existingLog && existingLog.processed) {
+                console.warn(`Webhook already processed for collect_id: ${orderInfo.order_id}`);
+                return {
+                    success: true,
+                    message: 'Webhook already processed',
+                    alreadyProcessed: true,
+                };
+            }
+
+            // Extract collect_id and transactionId from order_id
+            const [collectId, transactionId] = orderInfo.order_id.split('/');
+            if (!collectId || !transactionId) {
                 throw new Error('Invalid payload: collect_id or transaction_id is missing');
             }
 
-            // find collect_id -> collect_request_id
+            // Find collect_id -> collect_request_id
             const order = await this.ordersService.findOrderByCollectRequestId(collectId) as { _id: string };
-
             if (!order) {
                 throw new Error(`Order not found for collect_id: ${collectId}`);
             }
 
-            // update thie order with gateway info
+            // Update the order with gateway info
             await this.ordersService.updateOrderWithWebhookInfo(collectId, orderInfo.gateway_name);
 
-            // update the status
+            // Update the status
             await this.orderStatusService.updateByCollectId(collectId, {
                 status: orderInfo.status === 'success' ? OrderStatusEnum.COMPLETED : OrderStatusEnum.FAILED,
                 transaction_amount: orderInfo.transaction_amount,
                 payment_details: orderInfo.payment_details,
                 payment_time: new Date(orderInfo.payment_time),
                 payment_message: orderInfo.Payment_message,
-                payment_mode: orderInfo.pyament_mode,
+                payment_mode: orderInfo.payment_mode,
                 bank_reference: orderInfo.bank_reference,
-                error_message: orderInfo.error_message !=='NA' ? orderInfo.error_message : undefined,
+                error_message: orderInfo.error_message !== 'NA' ? orderInfo.error_message : undefined,
             });
 
-            // webhook log
-            await this.webhookLogService.createWebhookLog({
-                collect_id: order._id.toString(),
+            // Save webhook log with processed = false
+            const webhookLog = await this.webhookLogService.createWebhookLog({
+                collect_id: collectId, // Use collect_request_id from the payload
                 status: payload.status,
                 payload: payload,
+                idempotency_key: indempotencyKey,
+                processed: false,
             });
+
+            // Mark the webhook log as processed
+            if (webhookLog && webhookLog._id) {
+                const webhookLogId = typeof webhookLog._id === 'string' ? webhookLog._id : webhookLog._id.toString();
+                await this.webhookLogService.markAsProcessedAtomically(webhookLogId);
+            } else {
+                console.error('Failed to mark webhook as processed: Missing webhookLog._id');
+            }
+
             return { success: true, message: 'Webhook processed successfully' };
         } catch (error) {
-
             try {
+                // Re-extract collectId from payload
+                const collectRequestId = payload?.order_info?.order_id?.split('/')?.[0];
+                if (!collectRequestId) {
+                    console.error('Invalid payload: collect_request_id is missing');
+                    return;
+                }
 
-                const collectId = payload?.order_info?.order_id.split('/')?.[0];
-
-                if (collectId) {
+                // Try to find an existing order first
+                const orderObject = await this.ordersService.findOrderByCollectRequestId(collectRequestId);
+                if (orderObject) {
                     await this.webhookLogService.createWebhookLog({
-                        collect_id: collectId,
-                        status: payload.status,
+                        collect_id: collectRequestId, // Use collect_request_id from the payload
+                        status: payload?.status || 500,
                         payload: payload,
+                        idempotency_key: payload?.order_info?.order_id || `error-${Date.now()}`,
                         error_message: error.message,
                     });
                 } else {
-                    console.error('cannot log webhook wrror : Invalid collect_id ', error.message);
+                    console.error('Cannot log webhook error: Order not found for', collectRequestId);
                 }
             } catch (logError) {
                 console.error('Failed to log webhook error:', logError.message);

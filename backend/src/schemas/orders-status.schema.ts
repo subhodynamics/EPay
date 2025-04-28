@@ -52,4 +52,8 @@ export class OrderStatus {
 
 export const OrderStatusSchema = SchemaFactory.createForClass(OrderStatus);
 
-OrderStatusSchema.index({ collect_id: 1 });
+OrderStatusSchema.index({ collect_id: 1 }, { unique: true });
+OrderStatusSchema.index({ collect_request_id: 1 }, { unique: true }); 
+OrderStatusSchema.index({ payment_time: -1 }); // For sorting DESC by payment time
+OrderStatusSchema.index({ status: 1 }); // For filtering by status
+OrderStatusSchema.index({ transaction_amount: 1 }); // For sorting by amount

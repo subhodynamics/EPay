@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentsModule } from './payment/payments.module';
 import { WebhookModule } from './webhooks/webhooks.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { WebhookModule } from './webhooks/webhooks.module';
     OrdersModule,
     OrderStatusModule,
     WebhookModule,
+    TransactionsModule,
   ],
 })
 export class AppModule { }
