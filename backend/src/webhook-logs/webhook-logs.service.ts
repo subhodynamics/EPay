@@ -12,9 +12,8 @@ export class WebhookLogService {
     private readonly webhookLogModel: Model<WebhookLogDocument>
   ) {}
 
-  /**
-   * Create webhook log entry
-   */
+  // creating webhook log entry
+  // here i will keep it to be processed only once [processed = false]
   async createWebhookLog(logData: {
     collect_id: string;
     status: number;

@@ -43,22 +43,22 @@ export class OrderStatusService {
     return status;
   }
 
-  async updateByCollectRequestId(
-    collectRequestId: string,
+  async updateByCollectId(
+    collectId: string,
     updateData: Partial<OrderStatus>
   ): Promise<OrderStatus> {
     try {
       const result = await this.orderStatusModel.findOneAndUpdate(
-        { collect_request_id: collectRequestId },
+        { collect_request_id: collectId },
         { $set: updateData },
         { new: true }
       ).exec();
 
       if (!result) {
-        throw new NotFoundException(`Order status not found for collect_request_id: ${collectRequestId}`);
+        throw new NotFoundException(`Order status not found for collect_request_id: ${collectId}`);
       }
 
-      this.logger.log(`Updated status for collect_request_id: ${collectRequestId}`);
+      this.logger.log(`Updated status for collect_request_id: ${collectId}`);
       return result;
     } catch (error) {
       this.logger.error(`Status update failed: ${error.message}`);

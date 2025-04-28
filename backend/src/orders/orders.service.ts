@@ -41,8 +41,8 @@ export class OrdersService {
   }
 
   // Find order by collect_request_id
-  async findOrderByCollectRequestId(collectRequestId: string): Promise<Order | null> {
-    return this.orderModel.findOne({ collect_request_id: collectRequestId }).exec();
+  async findOrderByCollectRequestId(collectId: string): Promise<Order | null> {
+    return this.orderModel.findOne({ collect_request_id: collectId }).exec();
   }
   
   // Update with gateway info from webhook
@@ -52,6 +52,7 @@ export class OrdersService {
       { gateway_name: gatewayName },
       { new: true }
     ).exec();
+
     if (!updateOrderStatus) {
       throw new Error(`Order not found for collect_request_id: ${collectRequestId}`);
     }

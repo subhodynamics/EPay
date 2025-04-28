@@ -37,6 +37,9 @@ export class OrderStatus {
   @Prop()
   payment_message?: string;
 
+  @Prop()
+  payment_mode?: string;
+
   @Prop({ required: true , enum: OrderStatusEnum })
   status: OrderStatusEnum; //status should not be undefined (atomic)
 
