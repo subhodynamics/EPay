@@ -8,6 +8,7 @@ import { WebhookLogsModule } from './webhook-logs/webhook-logs.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentsModule } from './payment/payments.module';
+import { WebhookModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -56,7 +57,7 @@ import { PaymentsModule } from './payment/payments.module';
     PaymentsModule,
     OrdersModule,
     OrderStatusModule,
-    WebhookLogsModule,
+    WebhookModule,
   ],
 })
 export class AppModule { }
