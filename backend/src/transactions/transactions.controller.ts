@@ -35,6 +35,10 @@ export class TransactionsController {
 
   @Get('status/:collectRequestId')
   async getTransactionStatus(@Param('collectRequestId') collectRequestId: string) {
+    if (!collectRequestId || typeof collectRequestId !== 'string') {
+      return { status: 'INVALID_REQUEST', message: 'Invalid collect_request_id' };
+    }
+
     return this.transactionsService.getTransactionStatus(collectRequestId);
   }
 }

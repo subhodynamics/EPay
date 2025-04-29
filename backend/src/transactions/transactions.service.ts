@@ -122,11 +122,15 @@ export class TransactionsService {
   }
 
   async getTransactionStatus(collectRequestId: string) {
+    // console.log('Received collect_request_id:', collectRequestId);
+  
     const status = await this.orderStatusModel
-      .findOne({ collect_request_id: collectRequestId })
-      .select('status payment_time transaction_amount payment_details error_message')
+      .findOne({ collect_request_id: { $regex: `^${collectRequestId}$`, $options: 'i' } }) // Case-insensitive match
+      .select('status payment_time transaction_amount payment_details error_message bank_reference')
       .exec();
-
+  
+    // console.log('Query Result:', status);
+  
     if (!status) {
       return { status: 'NOT_FOUND', message: 'Transaction not found' };
     }
