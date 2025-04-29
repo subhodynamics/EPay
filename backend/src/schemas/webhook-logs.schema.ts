@@ -23,7 +23,7 @@ export class WebhookLog {
   @Prop({ type: Boolean, default: false })
   processed: boolean;
 
-  @Prop({ index : true })
+  @Prop({ type : String })
   idempotency_key: string;
 }
 
@@ -33,3 +33,4 @@ WebhookLogSchema.index({ received_at: -1 }); // For sorting DESC by received tim
 WebhookLogSchema.index({ processed: 1 }); // For filtering by processed status
 WebhookLogSchema.index({ status: 1 }); // For filtering by status
 WebhookLogSchema.index({ idempotency_key : 1 }, { unique: true, sparse: true }); // For fast lookups
+WebhookLogSchema.index({ collect_id: 1 }, { unique: true }); // For filtering by collect_id

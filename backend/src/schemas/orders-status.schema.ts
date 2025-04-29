@@ -13,10 +13,10 @@ enum OrderStatusEnum {
 
 @Schema( { timestamps: true })
 export class OrderStatus {
-  @Prop({ type: Types.ObjectId, ref: 'Order', required: true, unique: true })
+  @Prop({ type: Types.ObjectId, ref: 'Order', required: true })
   collect_id: Types.ObjectId;
 
-  @Prop({ type: String, required: true, index: true })
+  @Prop({ type: String, required: true })
   collect_request_id: string;  // Payment gateway's transaction ID
 
   @Prop({ required: true })

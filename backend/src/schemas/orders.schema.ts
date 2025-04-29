@@ -28,7 +28,7 @@ export class Order extends Document {
   @Prop({ type: String, required: false })
   gateway_name: string;
   
-  @Prop({ type: String, required: true, index: true })
+  @Prop({ type: String, required: true })
   collect_request_id: string; // Store the payment gateway's unique ID
 }
 
