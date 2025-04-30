@@ -1,0 +1,61 @@
+.dashboard-container {
+    padding: 1rem;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #1f2937; /* Dark gray text */
+  }
+  
+  .dashboard-table-container {
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  .dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff; /* White background */
+  }
+  
+  .dashboard-table th {
+    background-color: #f3f4f6; /* Light gray background */
+    color: #4b5563; /* Medium gray text */
+    text-align: left;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .dashboard-table td {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    color: #374151; /* Dark gray text */
+    border-bottom: 1px solid #e5e7eb; /* Light gray border */
+  }
+  
+  .dashboard-table tr:nth-child(even) {
+    background-color: #f9fafb; /* Very light gray for alternating rows */
+  }
+  
+  .dashboard-table tr:hover {
+    background-color: #f3f4f6; /* Light gray on hover */
+  }
+  
+  .dashboard-status-completed {
+    color: #16a34a; /* Green for completed */
+    font-weight: bold;
+  }
+  
+  .dashboard-status-failed {
+    color: #dc2626; /* Red for failed */
+    font-weight: bold;
+  }
+  
+  .dashboard-status-pending {
+    color: #f59e0b; /* Yellow for pending */
+    font-weight: bold;
+  }
