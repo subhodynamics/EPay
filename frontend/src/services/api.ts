@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://ec2-65-1-135-132.ap-south-1.compute.amazonaws.com:3000",
+  baseURL: "https://epaybackend.subhadeep.in", // Updated backend URL
   headers: {
     "Content-Type": "application/json",
   },
