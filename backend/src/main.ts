@@ -27,20 +27,11 @@ async function bootstrap() {
     }),
   );
 
-  // app.enableCors({
-  //   origin: process.env.ALLOWED_ORIGIN?.split(',') || [
-  //     'http://localhost:3000',
-  //     // 'https://epay.subhadeep.in'
-  //   ],
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   credentials: true,
-  //   allowedHeaders: ['Content-Type', 'Authorization'],
-  // });
-
   app.enableCors({
     origin: 'http://localhost:5173', // Allow requests from your frontend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Include OPTIONS for preflight
     credentials: true, // Allow cookies if needed
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
   });
 
   // app.enableCors();
