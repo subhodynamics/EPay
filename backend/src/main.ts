@@ -31,7 +31,10 @@ async function bootstrap() {
   // Enable CORS using the `cors` library
   app.use(
     cors({
-      origin: 'http://localhost:5173', // Allow requests from your frontend
+      origin: [
+        "http://localhost:5173", // For local development
+        "https://epay.subhadeep.in", // For production
+      ], // Allow requests from your frontend
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Allowed HTTP methods
       credentials: true, // Allow cookies if needed
       allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
