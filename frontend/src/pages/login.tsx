@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../services/api";
-import "../styles/Login.css"; // Import the styles
+import "../styles/Login.css";
+
+// Define the expected response shape for the login API
+interface LoginResponse {
+  access_token: string;
+}
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +20,10 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await apiClient.post("/auth/login", { email, password });
+      const response = await apiClient.post<LoginResponse>("/auth/login", {
+        email,
+        password,
+      });
       const { access_token } = response.data;
 
       // Save the token in local storage
@@ -23,7 +32,10 @@ const Login = () => {
       // Redirect to the dashboard
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      // Use any to avoid AxiosError import
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     }
   };
 

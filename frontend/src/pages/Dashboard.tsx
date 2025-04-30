@@ -22,12 +22,12 @@ const Dashboard = () => {
   useEffect(() => {
     setLoading(true);
     apiClient
-      .get("/transactions")
+      .get<{ data: Transaction[] }>("/transactions") // Explicitly define the response type
       .then((res) => {
         setTransactions(res.data.data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error(err);
         setLoading(false);
       });
