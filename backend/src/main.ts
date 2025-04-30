@@ -27,15 +27,17 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors({
-    origin: process.env.ALLOWED_ORIGIN?.split(',') || [
-      'http://localhost:3000',
-      // 'https://epay.subhadeep.in'
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  // app.enableCors({
+  //   origin: process.env.ALLOWED_ORIGIN?.split(',') || [
+  //     'http://localhost:3000',
+  //     // 'https://epay.subhadeep.in'
+  //   ],
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  //   credentials: true,
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  // });
+
+  app.enableCors();
 
   // app.useGlobalGuards(new (AuthGuard('jwt'))()); // Use JWT Auth Guard globally
 
