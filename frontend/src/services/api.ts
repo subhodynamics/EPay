@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/",
+  baseURL: "https://epay.subhadeep.in",
   headers: {
     "Content-Type": "application/json",
   },
