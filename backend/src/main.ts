@@ -3,14 +3,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { AuthGuard } from '@nestjs/passport';
+import * as cors from 'cors';
 
 async function bootstrap() {
-
-  dotenv.config(); // load env variables
+  dotenv.config(); // Load environment variables
 
   const app = await NestFactory.create(AppModule);
 
+  // MongoDB connection logs
   mongoose.connection.on('connected', () => {
     console.log('MongoDB connection established successfully');
   });
@@ -19,40 +19,43 @@ async function bootstrap() {
     throw new Error('DB is not connected');
   });
 
+  // Enable global validation pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
     }),
   );
 
-  app.enableCors({
-    origin: 'http://localhost:5173', // Allow requests from your frontend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Include OPTIONS for preflight
-    credentials: true, // Allow cookies if needed
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
-  });
+  // Enable CORS using the `cors` library
+  app.use(
+    cors({
+      origin: 'http://localhost:5173', // Allow requests from your frontend
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Allowed HTTP methods
+      credentials: true, // Allow cookies if needed
+      allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+    }),
+  );
 
-  // app.enableCors();
-
-  // app.useGlobalGuards(new (AuthGuard('jwt'))()); // Use JWT Auth Guard globally
-
-  // Middleware to handle preflight requests
+  // Middleware to handle preflight requests explicitly (optional, for debugging)
   app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
     res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') {
+      console.log('Handling preflight request');
       return res.sendStatus(204); // Respond to preflight request
     }
     next();
   });
 
-  // await app.listen(process.env.PORT ?? 3000);
+  // Start the server
   const port = process.env.PORT || 3000;
   app.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
   });
 }
+
 bootstrap();
