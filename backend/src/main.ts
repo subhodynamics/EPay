@@ -37,7 +37,13 @@ async function bootstrap() {
   //   allowedHeaders: ['Content-Type', 'Authorization'],
   // });
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:5173', // Allow requests from your frontend
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
+    credentials: true, // Allow cookies if needed
+  });
+
+  // app.enableCors();
 
   // app.useGlobalGuards(new (AuthGuard('jwt'))()); // Use JWT Auth Guard globally
 
