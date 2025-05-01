@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios';
-import { isAxiosError } from 'axios'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -37,12 +36,31 @@ export default function Login() {
       navigate('/home') // Navigate to home page after successful login
   
     } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message || 'Invalid credentials. Please try again.'
-        : 'Login failed. Please try again.'
+      let message = 'Login failed. Please try again.'; // Default message
+
+      // Check if the error object has the expected Axios error structure
+      if (error && typeof error === 'object' && 'response' in error) {
+        const response = (error as any).response; // Use 'as any' or define a type/interface
+        if (response && typeof response === 'object' && 'data' in response) {
+          const data = response.data;
+          // Use the server's message if it exists and is a string
+          if (data && typeof data === 'object' && typeof data.message === 'string') {
+            message = data.message;
+          } else {
+            // Fallback if the structure is there but no specific message
+            message = 'Invalid credentials. Please try again.';
+          }
+        } else {
+           // Fallback if response exists but no data
+           message = 'Invalid credentials. Please try again.';
+        }
+      } else if (error instanceof Error) {
+        // Handle generic JavaScript errors
+        message = error.message;
+      }
   
-      setError(message)
-      console.error('Login failed:', error)
+      setError(message);
+      console.error('Login failed:', error);
     } finally {
       setIsLoading(false)
     }
