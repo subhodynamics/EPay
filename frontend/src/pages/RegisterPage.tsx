@@ -4,7 +4,7 @@ import axios from 'axios'
 import { UserRegisterData } from '../types'
 
 export default function Register() {
-  const [formData, setFormData] = useState<UserRegisterData>({
+  const [formData ] = useState<UserRegisterData>({
     name: '',
     email: '',
     password: '',
@@ -23,12 +23,12 @@ export default function Register() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   setFormData({
+  //     ...formData,
+  //     [e.target.name]: e.target.value
+  //   })
+  // }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">

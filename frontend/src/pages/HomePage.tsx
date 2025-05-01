@@ -40,7 +40,7 @@ interface ApiResponse {
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [statusDetails, setStatusDetails] = useState<StatusDetails | null>(null);
+  const [statusDetails ] = useState<StatusDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [schoolIdInput, setSchoolIdInput] = useState('');
@@ -71,40 +71,40 @@ export default function Home() {
     }
   };
 
-  const handleSchoolSearch = async (schoolId: string) => {
-    try {
-      setLoading(true);
-      setStatusDetails(null);
-      const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`);
-      setTransactions(response.data.data);
-      setError('');
-    } catch (error) {
-      setError('Invalid school ID or no transactions found');
-      setTransactions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleSchoolSearch = async (schoolId: string) => {
+  //   try {
+  //     setLoading(true);
+  //     setStatusDetails(null);
+  //     const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`);
+  //     setTransactions(response.data.data);
+  //     setError('');
+  //   } catch (error) {
+  //     setError('Invalid school ID or no transactions found');
+  //     setTransactions([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleStatusCheck = async (collectId: string) => {
-    try {
-      setLoading(true);
-      const response = await api.get<StatusDetails>(`/transactions/status/${collectId}`);
-      setStatusDetails(response.data);
-      setError('');
-    } catch (error) {
-      setError('Invalid collect ID or transaction not found');
-      setStatusDetails(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleStatusCheck = async (collectId: string) => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.get<StatusDetails>(`/transactions/status/${collectId}`);
+  //     setStatusDetails(response.data);
+  //     setError('');
+  //   } catch (error) {
+  //     setError('Invalid collect ID or transaction not found');
+  //     setStatusDetails(null);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleLocalSearch = () => {
-    if (schoolIdInput.trim()) {
-      handleSchoolSearch(schoolIdInput.trim());
-    }
-  };
+  // const handleLocalSearch = () => {
+  //   if (schoolIdInput.trim()) {
+  //     handleSchoolSearch(schoolIdInput.trim());
+  //   }
+  // };
 
   const toggleSortDirection = () => {
     setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
