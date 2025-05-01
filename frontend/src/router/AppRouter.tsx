@@ -1,24 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "../pages/Dashboard";
-import TransactionDetails from "../pages/TransactionDetails";
-import TransactionStatus from "../pages/TransactionStatus";
-import Login from "../pages/login";
-import Register from "../pages/Register";
-import HomeModal from "../pages/HomeModal";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from '../pages/LandingPage';
+import RegisterPage from '../pages/RegisterPage';
+import LoginPage from '../pages/LoginPage';
+import HomePage from '../pages/HomePage';
 
-function AppRouter() {
+export default function AppRouter() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomeModal />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/transaction-details" element={<TransactionDetails />} />
-        <Route path="/transaction-status" element={<TransactionStatus />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/Home" element={<HomePage />} />
       </Routes>
     </Router>
   );
 }
-
-export default AppRouter;

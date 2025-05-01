@@ -1,11 +1,9 @@
-import AppRouter from './router/AppRouter';
+import { Outlet } from 'react-router-dom'
 
-function App() {
+export default function App() {
   return (
-    <div>
-      <AppRouter />
+    <div className="min-h-screen bg-gray-100">
+      <Outlet />
     </div>
-  );
+  )
 }
-
-export default App;
