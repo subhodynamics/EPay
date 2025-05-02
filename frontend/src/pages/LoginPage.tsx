@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../api/axios';
+import api from '../api/axios'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -24,43 +24,24 @@ export default function Login() {
       if (!token) throw new Error('Token not received.')
   
       localStorage.setItem('token', token)
-  
-      // // Call /transactions with token to confirm access
-      // const txRes = await api.get('/transactions') // token auto-attached via interceptor
-  
-      // if (txRes.status === 200) {
-      //   navigate('/home') // Only navigate after successful fetch
-      // } else {
-      //   throw new Error('Failed to fetch transactions.')
-      // }
-      navigate('/home') // Navigate to home page after successful login
+      navigate('/home')
   
     } catch (error) {
-      let message = 'Login failed. Please try again.'; // Default message
+      let message = 'Login failed. Please try again.'
 
-      // Check if the error object has the expected Axios error structure
       if (error && typeof error === 'object' && 'response' in error) {
-        const response = (error as any).response; // Use 'as any' or define a type/interface
-        if (response && typeof response === 'object' && 'data' in response) {
-          const data = response.data;
-          // Use the server's message if it exists and is a string
-          if (data && typeof data === 'object' && typeof data.message === 'string') {
-            message = data.message;
-          } else {
-            // Fallback if the structure is there but no specific message
-            message = 'Invalid credentials. Please try again.';
-          }
-        } else {
-           // Fallback if response exists but no data
-           message = 'Invalid credentials. Please try again.';
+        const response = (error as any).response
+        if (response?.data?.message) {
+          message = response.data.message
+        } else if (response?.statusText) {
+          message = response.statusText
         }
       } else if (error instanceof Error) {
-        // Handle generic JavaScript errors
-        message = error.message;
+        message = error.message
       }
-  
-      setError(message);
-      console.error('Login failed:', error);
+
+      setError(message)
+      console.error('Login failed:', error)
     } finally {
       setIsLoading(false)
     }
@@ -72,7 +53,7 @@ export default function Login() {
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         {error && (
           <p className="text-red-500 mb-4 text-center">
-            {error}
+            {error} {/* Changed to show actual error message */}
           </p>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,7 +85,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              minLength={6}
+              minLength={8} // backend has 8 char password policy
             />
           </div>
           <button
