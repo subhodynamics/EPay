@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '/src/assets/logo/Epay.png';
 
 const Navbar: React.FC = () => {
     const navigate = useNavigate();
@@ -40,9 +41,9 @@ const Navbar: React.FC = () => {
                 </button>
 
                 {/* Logo */}
-                <div className="flex-shrink-0 mx-4">
+                <div className="flex-shrink-0 mx-4 flex items-center">
                     <img
-                        src="/src/assets/logo/Epay.png"
+                        src={logo}
                         alt="Company Logo"
                         className="w-[150px] h-[150px] object-contain"
                     />
