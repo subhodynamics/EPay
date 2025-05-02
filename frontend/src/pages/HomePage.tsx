@@ -47,6 +47,8 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'payment_time' | 'transaction_amount'>('payment_time');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,11 +60,15 @@ export default function Home() {
     fetchInitialTransactions();
   }, [navigate]);
 
-  const fetchInitialTransactions = async (): Promise<void> => {
+  const fetchInitialTransactions = async (page: number = 1): Promise<void> => {
     try {
       setLoading(true);
-      const response = await api.get<ApiResponse>('/transactions');
+      const response = await api.get<ApiResponse>('/transactions', {
+        params: { page, limit: 10 }
+      });
       setTransactions(response.data.data);
+      setCurrentPage(response.data.meta.page);
+      setTotalPages(response.data.meta.totalPages);
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
       setError('Failed to fetch transactions. Please try again.');
@@ -71,12 +77,16 @@ export default function Home() {
     }
   };
 
-  const handleSchoolSearch = async (schoolId: string): Promise<void> => {
+  const handleSchoolSearch = async (schoolId: string, page: number = 1): Promise<void> => {
     try {
       setLoading(true);
       setStatusDetails(null);
-      const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`);
+      const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`, {
+        params: { page, limit: 10 }
+      });
       setTransactions(response.data.data);
+      setCurrentPage(response.data.meta.page);
+      setTotalPages(response.data.meta.totalPages);
       setError('');
     } catch (error) {
       setError('Invalid school ID or no transactions found');
@@ -88,7 +98,7 @@ export default function Home() {
 
   const handleLocalSearch = (): void => {
     if (schoolIdInput.trim()) {
-      handleSchoolSearch(schoolIdInput.trim());
+      handleSchoolSearch(schoolIdInput.trim(), 1);
     } else {
       setError('Please enter a school ID');
     }
@@ -96,6 +106,26 @@ export default function Home() {
 
   const toggleSortDirection = (): void => {
     setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handlePreviousPage = (): void => {
+    const newPage = currentPage - 1;
+    if (newPage < 1) return;
+    if (schoolIdInput.trim()) {
+      handleSchoolSearch(schoolIdInput.trim(), newPage);
+    } else {
+      fetchInitialTransactions(newPage);
+    }
+  };
+
+  const handleNextPage = (): void => {
+    const newPage = currentPage + 1;
+    if (newPage > totalPages) return;
+    if (schoolIdInput.trim()) {
+      handleSchoolSearch(schoolIdInput.trim(), newPage);
+    } else {
+      fetchInitialTransactions(newPage);
+    }
   };
 
   const filteredAndSortedTransactions = [...transactions]
@@ -123,24 +153,26 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="flex justify-between items-center p-4 bg-gray-50 border-b">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-bold">Transaction List</h2>
                 <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold">Transaction List</h2>
                   <span className="text-gray-400">/</span>
-                  <input
-                    type="text"
-                    placeholder="Enter School ID"
-                    className="px-3 py-2 border rounded text-sm w-48 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    value={schoolIdInput}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSchoolIdInput(e.target.value)}
-                    onKeyPress={(e: React.KeyboardEvent) => e.key === 'Enter' && handleLocalSearch()}
-                  />
-                  <button
-                    onClick={handleLocalSearch}
-                    className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
-                  >
-                    <MagnifyingGlassIcon className="h-4 w-4" />
-                    Search
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter School ID"
+                      className="px-3 py-2 border rounded text-sm w-48 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      value={schoolIdInput}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSchoolIdInput(e.target.value)}
+                      onKeyPress={(e: React.KeyboardEvent) => e.key === 'Enter' && handleLocalSearch()}
+                    />
+                    <button
+                      onClick={handleLocalSearch}
+                      className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    >
+                      <MagnifyingGlassIcon className="h-4 w-4" />
+                      Search
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -230,6 +262,59 @@ export default function Home() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center p-4 border-t">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border rounded-md hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border rounded-md hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+              
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Showing <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> to{' '}
+                    <span className="font-medium">{Math.min(currentPage * 10, filteredAndSortedTransactions.length)}</span> of{' '}
+                    <span className="font-medium">{filteredAndSortedTransactions.length}</span> results
+                  </p>
+                </div>
+                <div>
+                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Previous</span>
+                      &lt;
+                    </button>
+                    <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="sr-only">Next</span>
+                      &gt;
+                    </button>
+                  </nav>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
