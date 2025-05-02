@@ -40,10 +40,10 @@ interface ApiResponse {
 
 export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [statusDetails ] = useState<StatusDetails | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [schoolIdInput, setSchoolIdInput] = useState('');
+  const [statusDetails, setStatusDetails] = useState<StatusDetails | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [schoolIdInput, setSchoolIdInput] = useState<string>('');
   const [sortBy, setSortBy] = useState<'payment_time' | 'transaction_amount'>('payment_time');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -58,7 +58,7 @@ export default function Home() {
     fetchInitialTransactions();
   }, [navigate]);
 
-  const fetchInitialTransactions = async () => {
+  const fetchInitialTransactions = async (): Promise<void> => {
     try {
       setLoading(true);
       const response = await api.get<ApiResponse>('/transactions');
@@ -71,42 +71,30 @@ export default function Home() {
     }
   };
 
-  // const handleSchoolSearch = async (schoolId: string) => {
-  //   try {
-  //     setLoading(true);
-  //     setStatusDetails(null);
-  //     const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`);
-  //     setTransactions(response.data.data);
-  //     setError('');
-  //   } catch (error) {
-  //     setError('Invalid school ID or no transactions found');
-  //     setTransactions([]);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const handleSchoolSearch = async (schoolId: string): Promise<void> => {
+    try {
+      setLoading(true);
+      setStatusDetails(null);
+      const response = await api.get<ApiResponse>(`/transactions/school/${schoolId}`);
+      setTransactions(response.data.data);
+      setError('');
+    } catch (error) {
+      setError('Invalid school ID or no transactions found');
+      setTransactions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const handleStatusCheck = async (collectId: string) => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.get<StatusDetails>(`/transactions/status/${collectId}`);
-  //     setStatusDetails(response.data);
-  //     setError('');
-  //   } catch (error) {
-  //     setError('Invalid collect ID or transaction not found');
-  //     setStatusDetails(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const handleLocalSearch = (): void => {
+    if (schoolIdInput.trim()) {
+      handleSchoolSearch(schoolIdInput.trim());
+    } else {
+      setError('Please enter a school ID');
+    }
+  };
 
-  // const handleLocalSearch = () => {
-  //   if (schoolIdInput.trim()) {
-  //     handleSchoolSearch(schoolIdInput.trim());
-  //   }
-  // };
-
-  const toggleSortDirection = () => {
+  const toggleSortDirection = (): void => {
     setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
   };
 
@@ -118,7 +106,7 @@ export default function Home() {
         const timeB = new Date(b.payment_time || 0).getTime();
         return sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
       }
-      return sortDirection === 'asc' 
+      return sortDirection === 'asc'
         ? a.transaction_amount - b.transaction_amount
         : b.transaction_amount - a.transaction_amount;
     });
@@ -131,39 +119,38 @@ export default function Home() {
       <div className="px-4 py-6">
         {error && <div className="bg-red-100 text-red-700 p-4 mb-4 rounded">{error}</div>}
 
-        <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
-          <div className="p-4 bg-gray-50 border-b">
-            <div className="flex items-center space-x-4">
-              <input
-                type="text"
-                placeholder="Enter School ID"
-                className="px-3 py-2 border rounded text-sm w-64 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={schoolIdInput}
-                onChange={(e) => setSchoolIdInput(e.target.value)}
-                // onKeyPress={(e) => e.key === 'Enter' && handleLocalSearch()}
-              />
-              <button
-                // onClick={handleLocalSearch}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
-              >
-                <MagnifyingGlassIcon className="h-4 w-4" />
-                Search
-              </button>
-            </div>
-          </div>
-        </div>
-
         {transactions.length > 0 ? (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="flex justify-between items-center p-4 bg-gray-50 border-b">
-              <h2 className="text-xl font-bold">Transaction List</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-bold">Transaction List</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400">/</span>
+                  <input
+                    type="text"
+                    placeholder="Enter School ID"
+                    className="px-3 py-2 border rounded text-sm w-48 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={schoolIdInput}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSchoolIdInput(e.target.value)}
+                    onKeyPress={(e: React.KeyboardEvent) => e.key === 'Enter' && handleLocalSearch()}
+                  />
+                  <button
+                    onClick={handleLocalSearch}
+                    className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+                  >
+                    <MagnifyingGlassIcon className="h-4 w-4" />
+                    Search
+                  </button>
+                </div>
+              </div>
+
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <label htmlFor="status-filter" className="text-sm text-gray-600">Status:</label>
                   <select
                     id="status-filter"
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
                     className="px-2 py-1 border rounded text-sm"
                   >
                     <option value="all">All</option>
@@ -188,7 +175,9 @@ export default function Home() {
                   
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as 'payment_time' | 'transaction_amount')}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                      setSortBy(e.target.value as 'payment_time' | 'transaction_amount')
+                    }
                     className="px-2 py-1 border rounded text-sm"
                   >
                     <option value="payment_time">Payment Time</option>
