@@ -84,7 +84,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete="current-password" // i don't want to keep this but okay
               minLength={8} // backend has 8 char password policy
             />
           </div>
