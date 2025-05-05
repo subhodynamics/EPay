@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import logo from '/src/assets/logo/Epay.png'
 
 export default function LandingPage() {
   const navigate = useNavigate()
@@ -6,7 +7,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center mb-8">Welcome to ePay</h1>
+        <div className="flex-shrink-0 mx-4 flex justify-center mb-6">
+          <img
+            src={logo}
+            alt="Company Logo"
+            className="w-[200px] h-[200px] object-contain"
+          />
+        </div>
         <div className="space-y-4">
           <button
             onClick={() => navigate('/login')}

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://epaybackend.subhadeep.in',
-  // baseURL: 'http://localhost:3000',
+  // baseURL: 'https://epaybackend.subhadeep.in',
+  baseURL: 'http://localhost:3000',
 });
 
 // Attach the bearer token (if present) to every request
