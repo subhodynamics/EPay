@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { UserRegisterData } from '../types'
+import logo from '/src/assets/logo/Epay.png'
 
 export default function Register() {
   const [formData, setFormData] = useState<UserRegisterData>({
@@ -35,7 +36,13 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
+        <div className="flex-shrink-0 mx-4 flex justify-center mb-6">
+          <img
+            src={logo}
+            alt="Company Logo"
+            className="w-[200px] h-[200px] object-contain"
+          />
+        </div>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

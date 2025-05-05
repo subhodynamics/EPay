@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
+import logo from '/src/assets/logo/Epay.png';
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -13,19 +14,19 @@ export default function Login() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-  
+
     try {
       const loginRes = await api.post<{ access_token: string }>('/auth/login', {
         email,
         password,
       })
-  
+
       const token = loginRes.data.access_token
       if (!token) throw new Error('Token not received.')
-  
+
       localStorage.setItem('token', token)
       navigate('/home')
-  
+
     } catch (error) {
       let message = 'Login failed. Please try again.'
 
@@ -50,7 +51,13 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+        <div className="flex-shrink-0 mx-4 flex justify-center mb-6">
+          <img
+            src={logo}
+            alt="Company Logo"
+            className="w-[200px] h-[200px] object-contain"
+          />
+        </div>
         {error && (
           <p className="text-red-500 mb-4 text-center">
             {error} {/* Changed to show actual error message */}
